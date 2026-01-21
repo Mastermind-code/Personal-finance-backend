@@ -1,12 +1,13 @@
 import pytest
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
 
 @pytest.mark.django_db
 def test_user_can_register():
     client = APIClient()
     response = client.post(
-        'api/auth/register',
+        '/api/auth/register/',
         {
             'username': 'john',
             'password': 'strongpassword123',
@@ -25,7 +26,7 @@ def test_user_can_login_and_receive_token():
     )
     client = APIClient()
     response = client.post(
-        'api/auth/login',
+        '/api/auth/login/',
         {
             'username': 'john',
             'password': 'strongpassword123'
