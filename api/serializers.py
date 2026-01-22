@@ -20,11 +20,9 @@ class ClassSerializer(serializers.ModelSerializer):
 
         fields = ['id', 'username', 'email']
 
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = USer,
-#         field = ["id", "username", "email", ]
-#         lass UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = USer,
+        model = USer
         field = ["id", "username", "email", ]
+
+        
