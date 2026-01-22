@@ -34,12 +34,7 @@ def test_user_can_login_and_receive_token():
         format='json'
     )
     assert response.status_code ==200
-    assert 'access' in response.dataVerify whether a user is authenticated
-
-Fetch the current user’s identity
-
-Bootstrap user-specific data (dashboard, preferences, etc.)
-
+    assert 'access' in response.data
 
 
 @pytest.mark.django_db
@@ -58,16 +53,16 @@ def test_authenticated_user_can_access_profile_endpoint():
         HTTP_AUTHORIZATION= f'Bearer   {refresh.access_token}'
     )
 
-    response = client.get("/api/auth/me/")
+    response = client.get("/api/auth/profile/")
 
     assert response.status_code == 200
     assert response.data['username'] == "john"
     assert response.email['email'] =='johndoe@example.com'
 
 
-@pytest.mark.django_dbclient = APIClient()
-def test_unauthurised_user_cannot_access_profile_endpoint():
+@pytest.mark.django_db
+def test_unauthorized_user_cannot_access_profile_endpoint():
     client = APIClient()
-    response = client.get('/api/auth/me/')
+    response = client.get('/api/auth/profile/')
 
     assert response.status_code == 404
