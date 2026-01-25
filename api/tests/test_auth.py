@@ -43,7 +43,7 @@ def test_authenticated_user_can_access_profile_endpoint():
     user = User.objects.create_user(
         username="john",
         password='password',
-        email='jogndoe@example.com'
+        email='johndoe@example.com'
     )
     refresh = RefreshToken.for_user(user)
 
@@ -57,7 +57,7 @@ def test_authenticated_user_can_access_profile_endpoint():
 
     assert response.status_code == 200
     assert response.data['username'] == "john"
-    assert response.email['email'] =='johndoe@example.com'
+    assert response.data['email'] =='johndoe@example.com'
 
 
 @pytest.mark.django_db
@@ -65,4 +65,4 @@ def test_unauthorized_user_cannot_access_profile_endpoint():
     client = APIClient()
     response = client.get('/api/auth/profile/')
 
-    assert response.status_code == 404
+    assert response.status_code == 401

@@ -17,12 +17,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-
         fields = ['id', 'username', 'email']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = USer
-        field = ["id", "username", "email", ]
+        model = User
+        fields = ["id", "username", "email", ]
 
-        
