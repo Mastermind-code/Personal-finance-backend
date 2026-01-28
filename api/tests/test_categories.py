@@ -28,6 +28,9 @@ def test_authenticated_user_can_create_categories():
     assert response.status_code == 201
     assert response.data["name"] == "Food"
 
+
+
+@pytest.mark.django_db
 def test_user_can_only_see_their_own_category():
     user1 = User.objects.create_user(
         username='james bond',
@@ -44,3 +47,44 @@ def test_user_can_only_see_their_own_category():
 
     refresh= RefreshToken.for_user(user1)
 
+    client = APIClient()
+    client.credentials(
+        HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}"
+    )
+
+    response = client.get(
+        "/api/categories/",
+    )
+
+    assert response.status_code == 200
+    assert len(response.data) == 1
+    assert response.data[0]['name'] =='food'
+
+
+@pytest.mark.django_db
+def test_user_cannot_create_duplicate_category():
+    user1 = User.objects.create_user(
+        username="john doe",
+        password="qwerty"
+    )
+
+    refresh = RefreshToken.for_user(user1)
+
+    client = APIClient()
+    client.credentials(
+        HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}"
+    )
+    response1 = client.post(
+        "/api/categories/",
+    {"name": "food"},
+        format='json'
+    )
+
+    response2 = client.post(
+        "/api/categories/",
+        {"name": "food"},
+        format="json"
+    )
+
+    assert response1.status_code == 201
+    assert response2.status_code == 400
