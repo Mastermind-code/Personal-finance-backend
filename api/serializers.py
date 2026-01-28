@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
+
 from .models import Category
 
 
@@ -26,10 +28,17 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "email", ]
 
 class CategorySerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
     class Meta:
         model = Category
-        fields = ['id', 'name']
+        fields = ['id', 'name', "user"]
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Category.objects.all(),
+                fields = ['name', 'user'],
+                message="you already have a category with the same name."
+            )
+        ]
 
-    def create(self, validated_data):
-        user = self.context['request'].user
-        return Category.objects.create(user=user, **validated_data)
