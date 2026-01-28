@@ -4,8 +4,9 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from api.serializers import RegisterSerializer, UserSerializer
+from rest_framework.viewsets import ModelViewSet
+from .models import Category
+from api.serializers import RegisterSerializer, UserSerializer, CategorySerializer
 
 
 # Create your views here.
@@ -17,8 +18,16 @@ class RegisterView(generics.CreateAPIView):
 
 
 class ProfileView(APIView):
-    permissopn_class = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+
+class CategoryViewSet(ModelViewSet):
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import Category
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -24,3 +25,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "email", ]
 
+class CategorySerializer(serializers.ModelSerializer):
+    class meta:
+        model = Category
+        fields = ['id', 'name']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        return Category.objects.create(user=user, **validated_data)
