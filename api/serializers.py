@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from .models import Category
+from .models import Category,Budget
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -42,3 +42,13 @@ class CategorySerializer(serializers.ModelSerializer):
             )
         ]
 
+#
+# class BudgetSerializer(serializers.ModelSerializer):
+#     user = serializers.HiddenField(
+#         default=serializers.CurrentUserDefault()
+#     )
+#
+#     class Meta:
+#         model = Budget
+#         fields = ['id', 'category', 'user', 'period', 'amount']
+#
