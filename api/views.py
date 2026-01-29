@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from .models import Category
-from api.serializers import RegisterSerializer, UserSerializer, CategorySerializer
+from api.serializers import RegisterSerializer, UserSerializer, CategorySerializer, BudgetSerializer
 
 
 # Create your views here.
@@ -31,3 +31,13 @@ class CategoryViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Category.objects.filter(user=self.request.user)
+
+
+class BudgetViewSet(ModelViewSet):
+    serializer_class = BudgetSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)
+
+    

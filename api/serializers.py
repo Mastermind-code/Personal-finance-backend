@@ -42,13 +42,19 @@ class CategorySerializer(serializers.ModelSerializer):
             )
         ]
 
-#
-# class BudgetSerializer(serializers.ModelSerializer):
-#     user = serializers.HiddenField(
-#         default=serializers.CurrentUserDefault()
-#     )
-#
-#     class Meta:
-#         model = Budget
-#         fields = ['id', 'category', 'user', 'period', 'amount']
-#
+
+class BudgetSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+
+    class Meta:
+        model = Budget
+        fields = ['id', 'category', 'user', 'period', 'amount']
+        validators = [
+            UniqueTogetherValidator(
+                queryset = Budget.objects.all(),
+                fields = ['user', 'category'],
+                message = 'You already have a budget for this category.'
+            )
+        ]
