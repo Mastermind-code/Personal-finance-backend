@@ -1,8 +1,9 @@
 import pytest
 from rest_framework.test import APIClient
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 
+User = get_user_model()
 @pytest.mark.django_db
 def test_user_can_register():
     client = APIClient()
