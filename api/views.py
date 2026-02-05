@@ -5,8 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from .models import Category, Budget
-from api.serializers import RegisterSerializer, UserSerializer, CategorySerializer, BudgetSerializer
+from .models import Category, Budget, Transaction
+from api.serializers import RegisterSerializer, UserSerializer, CategorySerializer, BudgetSerializer, \
+    TransactionSerializer
 
 
 # Create your views here.
@@ -41,3 +42,13 @@ class BudgetViewSet(ModelViewSet):
         return Budget.objects.filter(user=self.request.user)
 
 
+
+class TransactionViewSet(ModelViewSet):
+    serializer_class = TransactionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Transaction.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

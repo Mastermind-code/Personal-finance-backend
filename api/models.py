@@ -36,7 +36,7 @@ class Budget(models.Model):
         return f"{self.user} - {self.category} -{self.amount} -"
 
 
-class Transactions(models.Model):
+class Transaction(models.Model):
     INCOME ="income"
     EXPENDITURE = "expenditure"
 
@@ -57,12 +57,12 @@ class Transactions(models.Model):
 
     description= models.CharField(max_length=300, blank=True, null=True)
 
-    transaction_type = models.CharField(max_length=100, choices=TRANSACTION_TYPE_CHOICES)
+    type = models.CharField(max_length=100, choices=TRANSACTION_TYPE_CHOICES)
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)
 
     class Meta:
-        ordering = ["created_at"]
+        ordering = ["date"]
 
     def __str__(self):
         return f"{self.transaction_type} - {self.amount}"

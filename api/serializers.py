@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from .models import Category,Budget
+from .models import Category,Budget, Transaction
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -58,3 +58,8 @@ class BudgetSerializer(serializers.ModelSerializer):
                 message = 'You already have a budget for this category.'
             )
         ]
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ['id', 'category', 'amount', 'type', 'description', 'date']

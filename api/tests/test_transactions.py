@@ -30,12 +30,14 @@ def test_use_can_create_transactions():
         {
             'category': category.id,
             'amount': '50.00',
-            'transaction_type': 'expense',
+            'type': 'income',
             'description': "Lunch"
         },
         format = "json"
     )
+    print(response.data)
 
     assert response.status_code == 201
     assert response.data["amount"] == '50.00'
-    assert response.data['transaction_type'] == 'expense'
+    assert response.data['type'] == 'income'
+
