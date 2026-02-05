@@ -33,3 +33,6 @@ class Budget(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.category} -{self.amount} -"
+
+
+# class Transactions(models.Model):

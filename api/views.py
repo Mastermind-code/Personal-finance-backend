@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from .models import Category
+from .models import Category, Budget
 from api.serializers import RegisterSerializer, UserSerializer, CategorySerializer, BudgetSerializer
 
 
@@ -38,6 +38,6 @@ class BudgetViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Category.objects.filter(user=self.request.user)
+        return Budget.objects.filter(user=self.request.user)
 
-    
+

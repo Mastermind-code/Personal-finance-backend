@@ -1,13 +1,14 @@
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView
-from api.views import RegisterView, ProfileView, CategoryViewSet
+from api.views import RegisterView, ProfileView, CategoryViewSet, BudgetViewSet
 from rest_framework.routers import DefaultRouter
 
 
 
 
 router = DefaultRouter()
-router.register(r"categories", CategoryViewSet, basename="category")
+router.register(r"categories", CategoryViewSet, basename="category"),
+router.register(r"budgets", BudgetViewSet, basename="budget"),
 
 urlpatterns = [
 path('auth/register/', RegisterView.as_view()),
