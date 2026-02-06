@@ -44,6 +44,9 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
+    spent = serializers.SerializerMethodField()
+    remaining = serializers.SerializerMethodField()
+
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
@@ -63,3 +66,12 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ['id', 'category', 'amount', 'type', 'description', 'date']
+
+    def validate_category(self, category):
+        request = self.context.get("request")
+        if category.user != request.user:
+            raise serializers.ValidationError(
+                "You cannot create a transaction under this category"
+            )
+        return category
+

@@ -41,3 +41,36 @@ def test_use_can_create_transactions():
     assert response.data["amount"] == '50.00'
     assert response.data['type'] == 'income'
 
+
+@pytest.mark.django_db
+def test_user_cannot_create_transactions_with_other_users_category():
+    user1 = User.objects.create_user(
+        username="john",
+        password = "qwerty"
+    )
+    user2 = User.objects.create_user(
+        username="doe",
+        password="pouyt"
+    )
+
+    category2 = Category.objects.create(user=user2, name="food")
+
+    refresh = RefreshToken.for_user(user1)
+
+    client = APIClient()
+    client.credentials(
+        HTTP_AUTHORIZATION= f"Bearer {refresh.access_token}"
+    )
+
+    response = client.post(
+        "/api/transactions/",
+        {
+            "category": category2.id,
+            "amount": "50.00",
+            "type": "expenditure",
+            "description": "lunch"
+        },
+        format="json"
+    )
+
+    assert response.status_code == 400
