@@ -70,7 +70,7 @@ def test_user_cannot_create_duplicate_budget_for_category():
     )
     assert response.status_code == 400
 
-@pytest.mark.django_db
+@pytest.mark.django_dbfi
 def test_budget_spent_only_count_current_month_transaction():
     user = User.objects.create_user(
         username="john",
@@ -113,4 +113,7 @@ def test_budget_spent_only_count_current_month_transaction():
     )
     assert response.status_code == 200
     assert response.data[0]['spent'] == '50.00'
-    assert response.dat[0]['remaining'] == '450.00'
+    assert response.data[0]['remaining'] == '450.00'"""
+please be consistent irrespective of the bugs we fix. Pasted below is the original next step you suggested. 
+However after each bugs you suggest a new one. I need you to be consistent and keep in mind our earlier chats so i wont find learning difficult. 
+"""
