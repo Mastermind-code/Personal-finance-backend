@@ -66,3 +66,10 @@ class TransactionViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class CategorySpendingSummaryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        today = date.today()
+        month = today.replace(day=1)
