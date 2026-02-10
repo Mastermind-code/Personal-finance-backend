@@ -1,3 +1,6 @@
+from datetime import date
+
+from django.db.models import Sum, Q
 from django.shortcuts import render
 from rest_framework import generics, permissions
 from django.contrib.auth.models import User
@@ -39,7 +42,18 @@ class BudgetViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Budget.objects.filter(user=self.request.user)
+        today = date.today()
+        month_start = today.replace(day=1)
+        return Budget.objects.filter(user=self.request.user).annotate(
+            spent=Sum(
+                "category__transaction__amount",
+                filter=Q(
+                    category__transaction__type=Transaction.EXPENDITURE,
+                    category__transactions__date__gte=month_start,
+                    category__transactions__date__lte=today,
+                )
+            )
+        )
 
 
 

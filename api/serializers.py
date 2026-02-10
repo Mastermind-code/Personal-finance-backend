@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-
+from decimal import Decimal
 from .models import Category,Budget, Transaction
 
 
@@ -44,7 +44,12 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
-    spent = serializers.SerializerMethodField()
+    spent = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        read_only=True
+    )
+
     remaining = serializers.SerializerMethodField()
 
     user = serializers.HiddenField(
@@ -53,7 +58,9 @@ class BudgetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Budget
-        fields = ['id', 'category', 'user', 'period', 'amount']
+        fields = ['id', 'category', 'user', 'period', 'amount', 'spent', 'remaining']
+        read_only_fields = ["spent", "remaining"]
+
         validators = [
             UniqueTogetherValidator(
                 queryset = Budget.objects.all(),
@@ -61,6 +68,10 @@ class BudgetSerializer(serializers.ModelSerializer):
                 message = 'You already have a budget for this category.'
             )
         ]
+    def get_remaining(self, obj):
+        spent = getattr(obj, "spent", Decimal("0.00"))
+        return obj.amount - spent
+
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:

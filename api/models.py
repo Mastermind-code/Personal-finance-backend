@@ -50,7 +50,8 @@ class Transaction(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='transactions'
     )
     category = models.ForeignKey(
-        Category, on_delete = models.CASCADE
+        Category, on_delete = models.CASCADE,
+    related_name = "transactions"
     )
 
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -65,5 +66,5 @@ class Transaction(models.Model):
         ordering = ["date"]
 
     def __str__(self):
-        return f"{self.transaction_type} - {self.amount}"
+        return f"{self.type} - {self.amount}"
 
