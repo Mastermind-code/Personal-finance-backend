@@ -73,3 +73,32 @@ class CategorySpendingSummaryView(APIView):
     def get(self, request):
         today = date.today()
         month = today.replace(day=1)
+        summary = Transaction.objects.filter(
+            user=request.user,
+            type=Transaction.EXPENDITURE,
+            date__gte=month,
+            date__lte=today
+        ).values(
+            "category__name",
+            "category__id"
+        ).annotate(
+            spent=Sum(
+                "amount",
+                filter=Q(
+                    type=Transaction.EXPENDITURE,
+                    date__gte=month,
+                    date__lte=today
+                )
+            )
+        ).order_by(
+            "category__name"
+        )
+        return Response([
+            {
+                "category_name": item['category__name'],
+                "category_id": item['category__id'],
+                "spent": item['spent']
+            }
+            for item in summary
+        ])
+

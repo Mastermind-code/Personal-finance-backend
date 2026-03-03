@@ -74,3 +74,4 @@ def test_user_cannot_create_transactions_with_other_users_category():
     )
 
     assert response.status_code == 400
+
