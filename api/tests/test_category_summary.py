@@ -60,6 +60,6 @@ def test_category_spending_summary_current_month():
     transport_data = next(c for c in response.data if c["category_name"] == "transport")
 
     assert food_data["spent"] == 200
-    assert transport_data["spent"] ==180
+    assert transport_data["spent"] == 180
 
 

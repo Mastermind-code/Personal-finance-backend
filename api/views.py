@@ -64,8 +64,7 @@ class TransactionViewSet(ModelViewSet):
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+
 
 class CategorySpendingSummaryView(APIView):
     permission_classes = [IsAuthenticated]

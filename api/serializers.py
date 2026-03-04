@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User
+from django.utils.timezone import now
+from django.db.models import Sum
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from decimal import Decimal
@@ -74,9 +76,72 @@ class BudgetSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    is_over_budget = serializers.SerializerMethodField()
+    remaining_budget = serializers.SerializerMethodField()
     class Meta:
         model = Transaction
-        fields = ['id', 'category', 'amount', 'type', 'description', 'date']
+        fields = ['id', 'category', 'amount', 'type', 'description', 'date', 'is_over_budget', 'remaining_budget']
+        read_only_fields = ["is_over_budget", "remaining_budget"]
+    
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['user'] = user
+
+        transaction = Transaction.objects.create(**validated_data)
+
+        budget_context = self.evaluate_budget(transaction)
+        if budget_context:
+            transaction._budget_context = budget_context
+
+        return transaction
+
+    def evaluate_budget(self, transaction):
+        if transaction.type != 'expenditure':
+            return None
+        
+        today = now().date()
+        month_start = today.replace(day=1)
+
+        budget = Budget.objects.filter(
+            user = transaction.user,
+            category = transaction.category,
+            period = "month"
+        ).first()
+
+        if not budget:
+            return None
+
+        spent = (
+            Transaction.objects.filter(
+                user=transaction.user,
+                category=transaction.category,
+                type=transaction.EXPENDITURE,
+                date__gte=month_start,
+            ).aggregate(
+                total_spent=Sum("amount")
+            )['total_spent'] or Decimal("0.00")
+        )
+
+        remaining = budget.amount - spent
+
+        
+
+        return {
+            "is_over_budget": remaining < 0,
+            "remaining_budget": remaining,
+        }
+
+    def get_is_over_budget(self, obj):
+        context = getattr(obj, "_budget_context", None)
+        if context:
+            return context["is_over_budget"]
+        return False
+
+    def get_remaining_budget(self, obj):
+        context = getattr(obj, "_budget_context", None)
+        if context:
+            return context["remaining_budget"]
+        return None
 
     def validate_category(self, category):
         request = self.context.get("request")
