@@ -90,7 +90,7 @@ def test_transaction_over_budget_detection():
         user=user,
         category=category,
         amount=100,
-        period="month"
+        period="monthly"
     )
     Transaction.objects.create(
         user=user,
@@ -135,7 +135,7 @@ def test_transaction_remaining_budget_calculation():
         user=user,
         category=category,
         amount=100,
-        period="month"
+        period="monthly"
     )
     
     

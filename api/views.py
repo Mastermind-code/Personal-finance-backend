@@ -46,9 +46,9 @@ class BudgetViewSet(ModelViewSet):
         month_start = today.replace(day=1)
         return Budget.objects.filter(user=self.request.user).annotate(
             spent=Sum(
-                "category__transaction__amount",
+                "category__transactions__amount",
                 filter=Q(
-                    category__transaction__type=Transaction.EXPENDITURE,
+                    category__transactions__type=Transaction.EXPENDITURE,
                     category__transactions__date__gte=month_start,
                     category__transactions__date__lte=today,
                 )

@@ -9,3 +9,11 @@ Pygments==2.19.2
 PyJWT==2.11.0
 pytest-django==4.12.0
 sqlparse==0.5.5
+
+dj-database-url==3.1.2
+django-cors-headers==4.9.0
+django-environ==0.13.0
+gunicorn==25.1.0
+psycopg-binary==3.3.3
+python-dotenv==1.2.2
+whitenoise==6.12.0

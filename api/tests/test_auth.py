@@ -51,7 +51,7 @@ def test_authenticated_user_can_access_profile_endpoint():
     client = APIClient()
 
     client.credentials(
-        HTTP_AUTHORIZATION= f'Bearer   {refresh.access_token}'
+        HTTP_AUTHORIZATION= f'Bearer {refresh.access_token}'
     )
 
     response = client.get("/api/auth/profile/")

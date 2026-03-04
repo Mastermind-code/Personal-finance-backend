@@ -105,7 +105,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         budget = Budget.objects.filter(
             user = transaction.user,
             category = transaction.category,
-            period = "month"
+            period = "monthly"
         ).first()
 
         if not budget:

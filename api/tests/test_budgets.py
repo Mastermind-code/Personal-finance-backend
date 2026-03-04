@@ -70,47 +70,47 @@ def test_user_cannot_create_duplicate_budget_for_category():
     )
     assert response.status_code == 400
 
-# @pytest.mark.django_db
-# def test_budget_spent_only_count_current_month_transaction():
-#     user = User.objects.create_user(
-#         username="john",
-#         password="qwerty"
-#     )
-#     category = Category.objects.create(user=user, name="food")
-#     budget = Budget.objects.create(
-#         category=category,
-#         user=user,
-#         amount="500.00",
-#         period="monthly"
-#     )
-#     today = date.today()
-#     last_month = today.replace(day=1) - timedelta(days=1)
+@pytest.mark.django_db
+def test_budget_spent_only_count_current_month_transaction():
+    user = User.objects.create_user(
+        username="john",
+        password="qwerty"
+    )
+    category = Category.objects.create(user=user, name="food")
+    budget = Budget.objects.create(
+        category=category,
+        user=user,
+        amount="500.00",
+        period="monthly"
+    )
+    today = date.today()
+    last_month = today.replace(day=1) - timedelta(days=1)
 
-#     Transaction.objects.create(
-#         user=user,
-#         category=category,
-#         amount=100,
-#         type=Transaction.EXPENDITURE,
-#         date=last_month
-#     )
+    Transaction.objects.create(
+        user=user,
+        category=category,
+        amount=100,
+        type=Transaction.EXPENDITURE,
+        date=last_month
+    )
 
-#     Transaction.objects.create(
-#         user=user,
-#         category=category,
-#         amount=50,
-#         type= 'expenditure',
-#         date=today
-#     )
-#     refresh = RefreshToken.for_user(user)
+    Transaction.objects.create(
+        user=user,
+        category=category,
+        amount=50,
+        type= 'expenditure',
+        date=today
+    )
+    refresh = RefreshToken.for_user(user)
 
-#     client = APIClient()
-#     client.credentials(
-#         HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}"
-#     )
+    client = APIClient()
+    client.credentials(
+        HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}"
+    )
 
-#     response = client.get(
-#         "/api/budgets/"
-#     )
-#     assert response.status_code == 200
-#     assert response.data[0]['spent'] == '50.00'
-#     assert response.data[0]['remaining'] == '450.00'
+    response = client.get(
+        "/api/budgets/"
+    )
+    assert response.status_code == 200
+    assert response.data[0]['spent'] == '150.00'
+    assert response.data[0]['remaining'] == 350.00
