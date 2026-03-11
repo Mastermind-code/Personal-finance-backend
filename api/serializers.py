@@ -82,6 +82,29 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         fields = ['id', 'category', 'amount', 'type', 'description', 'date', 'is_over_budget', 'remaining_budget']
         read_only_fields = ["is_over_budget", "remaining_budget"]
+
+    def get_queryset(self):
+        queryset = Transaction.objects.filter(user=self.request.user).select_related("category")
+
+        category = self.request.query_params.get("category")
+        transaction_type = self.request.query_params.get("type")
+        start_date = self.request.query_params.get("start_date")
+        end_date = self.request.query_params.get("end_date")
+
+        if category:
+            queryset = queryset.filter(category_id=category)
+
+        if transaction_type:
+            queryset = queryset.filter(type=transaction_type)
+
+        if start_date:
+            queryset = queryset.filter(date__gte=start_date)
+
+        if end_date:
+            queryset = queryset.filter(date__lte=end_date)
+
+        return queryset.order_by("-date")
+        
     
     def create(self, validated_data):
         user = self.context['request'].user
@@ -151,3 +174,12 @@ class TransactionSerializer(serializers.ModelSerializer):
             )
         return category
 
+
+class BudgetSummarySerializer(serializers.Serializer):
+    category_id = serializers.IntegerField()
+    category_name = serializers.CharField()
+    budget = serializers.DecimalField(max_digits=10, decimal_places=2)
+    spent = serializers.DecimalField(max_digits=10, decimal_places=2)
+    remaining = serializers.DecimalField(max_digits=10, decimal_places=2)
+    percentage_used = serializers.FloatField()
+    is_over_budget = serializers.BooleanField()

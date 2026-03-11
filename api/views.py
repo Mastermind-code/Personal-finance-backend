@@ -1,5 +1,9 @@
-from datetime import date
 
+from django.db.models import DecimalField
+from django.db.models.functions import Coalesce
+from rest_framework.decorators import permission_classes
+from datetime import date
+from decimal import Decimal
 from django.db.models import Sum, Q
 from django.shortcuts import render
 from rest_framework import generics, permissions
@@ -10,7 +14,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from .models import Category, Budget, Transaction
 from api.serializers import RegisterSerializer, UserSerializer, CategorySerializer, BudgetSerializer, \
-    TransactionSerializer
+    TransactionSerializer, BudgetSummarySerializer
 
 
 # Create your views here.
@@ -100,4 +104,67 @@ class CategorySpendingSummaryView(APIView):
             }
             for item in summary
         ])
+
+
+class BudgetSummaryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_date_range(self, period):
+        today = date.today()
+        if period == 'monthly':
+            return today.replace(day=1), today
+        # elif period == 'weekly':
+        #     start = today - timedelta(days=today.weekday())
+        #     return start, today
+        # elif period == 'yearly':
+        #     return today.replace(month=1, day=1), today
+        return None, None
+
+    def get(self, request):
+        today = date.today()
+        month_start = today.replace(day=1)
+
+        monthly_budgets = Budget.objects.filter(
+            user=request.user,
+            period='monthly'
+        ).annotate(
+            spent=Coalesce(
+                Sum(
+                    'category__transactions__amount',
+                    filter=Q(
+                        category__transactions__type=Transaction.EXPENDITURE,
+                        category__transactions__date__gte=month_start,
+                        category__transactions__date__lte=today,
+                    )
+                ),
+                Decimal('0.00'),
+                output_field=DecimalField()
+            )
+        ).select_related('category')
+
+        budgets = list(monthly_budgets)
+        # budgets += list(weekly_budgets)   # add later
+        # budgets += list(yearly_budgets)   # add later
+
+        data = []
+        for budget in budgets:
+            remaining = budget.amount - budget.spent
+            percentage_used = (
+                round(float((budget.spent / budget.amount) * 100), 2)
+                if budget.amount
+                else 0.0
+            )
+            data.append({
+                'category_id': budget.category.id,
+                'category_name': budget.category.name,
+                'budget': budget.amount,
+                'spent': budget.spent,
+                'remaining': remaining,
+                'percentage_used': percentage_used,
+                'is_over_budget': budget.spent > budget.amount,
+            })
+
+        serializer = BudgetSummarySerializer(data, many=True)
+        return Response(serializer.data)
+            
 

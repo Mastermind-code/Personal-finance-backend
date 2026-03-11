@@ -15,7 +15,7 @@ class Category(models.Model):
     def __str__(self):
             return self.name
 
-
+# TODO Add more period options for budgets.
 class Budget(models.Model):
     PERIOD_CHOICES = [
         ("monthly", "Monthly"),

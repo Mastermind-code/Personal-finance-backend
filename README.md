@@ -17,13 +17,13 @@ A RESTful API for managing personal finances. Users can track income and expendi
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Django 6.0.2 |
-| API | Django REST Framework 3.16.1 |
-| Authentication | SimpleJWT 5.5.1 |
-| Database | SQLite (development) |
-| Testing | pytest + pytest-django |
+| Layer          | Technology                   |
+| -------------- | ---------------------------- |
+| Framework      | Django 6.0.2                 |
+| API            | Django REST Framework 3.16.1 |
+| Authentication | SimpleJWT 5.5.1              |
+| Database       | SQLite (development)         |
+| Testing        | pytest + pytest-django       |
 
 ---
 
@@ -90,14 +90,12 @@ The API will be available at `http://127.0.0.1:8000/`.
 
 Before running in production, replace the following in `settings.py` or move them to a `.env` file:
 
-| Variable | Description |
-|---|---|
-| `SECRET_KEY` | Django secret key — keep this private |
-| `DEBUG` | Set to `False` in production |
-| `ALLOWED_HOSTS` | Add your domain or server IP |
-| `DATABASES` | Switch from SQLite to PostgreSQL for production |
-
-> ⚠️ Never commit your `SECRET_KEY` to version control.
+| Variable        | Description                                     |
+| --------------- | ----------------------------------------------- |
+| `SECRET_KEY`    | Django secret key — keep this private           |
+| `DEBUG`         | Set to `False` in production                    |
+| `ALLOWED_HOSTS` | Add your domain or server IP                    |
+| `DATABASES`     | Switch from SQLite to PostgreSQL for production |
 
 ---
 
@@ -105,61 +103,63 @@ Before running in production, replace the following in `settings.py` or move the
 
 All endpoints are prefixed with `/api/`.  
 Protected endpoints require a JWT access token in the header:
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 ### Auth
 
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| POST | `/api/auth/register/` | Register a new user | No |
-| POST | `/api/auth/login/` | Login and receive JWT tokens | No |
-| GET | `/api/auth/profile/` | Get current user's profile | Yes |
+| Method | Endpoint              | Description                  | Auth Required |
+| ------ | --------------------- | ---------------------------- | ------------- |
+| POST   | `/api/auth/register/` | Register a new user          | No            |
+| POST   | `/api/auth/login/`    | Login and receive JWT tokens | No            |
+| GET    | `/api/auth/profile/`  | Get current user's profile   | Yes           |
 
 ### Categories
 
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| GET | `/api/categories/` | List user's categories | Yes |
-| POST | `/api/categories/` | Create a new category | Yes |
-| GET | `/api/categories/{id}/` | Retrieve a category | Yes |
-| PUT | `/api/categories/{id}/` | Update a category | Yes |
-| DELETE | `/api/categories/{id}/` | Delete a category | Yes |
+| Method | Endpoint                | Description            | Auth Required |
+| ------ | ----------------------- | ---------------------- | ------------- |
+| GET    | `/api/categories/`      | List user's categories | Yes           |
+| POST   | `/api/categories/`      | Create a new category  | Yes           |
+| GET    | `/api/categories/{id}/` | Retrieve a category    | Yes           |
+| PUT    | `/api/categories/{id}/` | Update a category      | Yes           |
+| DELETE | `/api/categories/{id}/` | Delete a category      | Yes           |
 
 ### Budgets
 
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| GET | `/api/budgets/` | List budgets with spent/remaining amounts | Yes |
-| POST | `/api/budgets/` | Create a budget for a category | Yes |
-| GET | `/api/budgets/{id}/` | Retrieve a budget | Yes |
-| PUT | `/api/budgets/{id}/` | Update a budget | Yes |
-| DELETE | `/api/budgets/{id}/` | Delete a budget | Yes |
+| Method | Endpoint             | Description                               | Auth Required |
+| ------ | -------------------- | ----------------------------------------- | ------------- |
+| GET    | `/api/budgets/`      | List budgets with spent/remaining amounts | Yes           |
+| POST   | `/api/budgets/`      | Create a budget for a category            | Yes           |
+| GET    | `/api/budgets/{id}/` | Retrieve a budget                         | Yes           |
+| PUT    | `/api/budgets/{id}/` | Update a budget                           | Yes           |
+| DELETE | `/api/budgets/{id}/` | Delete a budget                           | Yes           |
 
 ### Transactions
 
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| GET | `/api/transactions/` | List user's transactions | Yes |
-| POST | `/api/transactions/` | Create a transaction | Yes |
-| GET | `/api/transactions/{id}/` | Retrieve a transaction | Yes |
-| PUT | `/api/transactions/{id}/` | Update a transaction | Yes |
-| DELETE | `/api/transactions/{id}/` | Delete a transaction | Yes |
+| Method | Endpoint                  | Description              | Auth Required |
+| ------ | ------------------------- | ------------------------ | ------------- |
+| GET    | `/api/transactions/`      | List user's transactions | Yes           |
+| POST   | `/api/transactions/`      | Create a transaction     | Yes           |
+| GET    | `/api/transactions/{id}/` | Retrieve a transaction   | Yes           |
+| PUT    | `/api/transactions/{id}/` | Update a transaction     | Yes           |
+| DELETE | `/api/transactions/{id}/` | Delete a transaction     | Yes           |
 
 > When creating an expenditure transaction, the response includes `is_over_budget` and `remaining_budget` fields automatically.
 
 ### Summary
 
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| GET | `/api/summary/category/` | Monthly spending totals grouped by category | Yes |
+| Method | Endpoint                 | Description                                 | Auth Required |
+| ------ | ------------------------ | ------------------------------------------- | ------------- |
+| GET    | `/api/summary/category/` | Monthly spending totals grouped by category | Yes           |
 
 ---
 
 ## Example Requests
 
 ### Register
+
 ```json
 POST /api/auth/register/
 {
@@ -170,6 +170,7 @@ POST /api/auth/register/
 ```
 
 ### Create a Transaction
+
 ```json
 POST /api/transactions/
 {
@@ -181,16 +182,17 @@ POST /api/transactions/
 ```
 
 ### Response (with budget info)
+
 ```json
 {
-    "id": 3,
-    "category": 1,
-    "amount": "50.00",
-    "type": "expenditure",
-    "description": "Lunch",
-    "date": "2026-03-04",
-    "is_over_budget": false,
-    "remaining_budget": "50.00"
+  "id": 3,
+  "category": 1,
+  "amount": "50.00",
+  "type": "expenditure",
+  "description": "Lunch",
+  "date": "2026-03-04",
+  "is_over_budget": false,
+  "remaining_budget": "50.00"
 }
 ```
 
