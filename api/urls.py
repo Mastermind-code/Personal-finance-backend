@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView
-from api.views import RegisterView, ProfileView, CategoryViewSet, BudgetViewSet, BudgetSummaryView, TransactionViewSet, CategorySpendingSummaryView
+from api.views import RegisterView, ProfileView, CategoryViewSet, BudgetViewSet, BudgetSummaryView, TransactionViewSet, CategorySpendingSummaryView, DashboardView
 from rest_framework.routers import DefaultRouter
 
 
@@ -17,6 +17,7 @@ path('auth/register/', RegisterView.as_view()),
     path('auth/profile/', ProfileView.as_view()),
     path('categories/summary/', CategorySpendingSummaryView.as_view()),
     path('budgets/summary/', BudgetSummaryView.as_view()),
+    path('dashboard/', DashboardView.as_view()),
 ]
 
 urlpatterns+=router.urls    

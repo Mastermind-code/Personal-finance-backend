@@ -50,7 +50,7 @@ def test_category_spending_summary_current_month():
         HTTP_AUTHORIZATION = f"Bearer {refresh.access_token}"
     )
 
-    response = client.get("/api/summary/category/")
+    response = client.get("/api/categories/summary/")
 
     assert response.status_code == 200
     assert len(response.data) == 2

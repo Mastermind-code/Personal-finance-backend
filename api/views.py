@@ -1,4 +1,5 @@
 
+from rest_framework.request import Request
 from django.db.models import DecimalField
 from django.db.models.functions import Coalesce
 from rest_framework.decorators import permission_classes
@@ -168,3 +169,78 @@ class BudgetSummaryView(APIView):
         return Response(serializer.data)
             
 
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        today = date.today()
+        month_start = today.replace(day=1)
+
+        transactions = Transaction.objects.filter(
+            user=request.user,
+            date__gte=month_start,
+            date__lte=today,
+        )
+
+        total_income = transactions.filter(
+            type=Transaction.INCOME
+        ).aggregate(
+            total=Coalesce(Sum('amount'), Decimal('0.00'), output_field=DecimalField())
+        )['total']
+
+        total_expenditure = transactions.filter(
+            type=Transaction.EXPENDITURE
+        ).aggregate(
+            total=Coalesce(Sum('amount'), Decimal('0.00'), output_field=DecimalField())
+        )['total']
+
+        net_balance = total_income - total_expenditure
+
+        budgets = Budget.objects.filter(
+            user=request.user,
+            period='monthly'
+        ).annotate(
+            spent=Coalesce(
+                Sum(
+                    'category__transactions__amount',
+                    filter=Q(
+                        category__transactions__type=Transaction.EXPENDITURE,
+                        category__transactions__date__gte=month_start,
+                        category__transactions__date__lte=today,
+                    )
+                ),
+                Decimal('0.00'),
+                output_field=DecimalField()
+            )
+        )
+
+        total_budget = budgets.aggregate(
+            total=Coalesce(Sum('amount'), Decimal('0.00'), output_field=DecimalField())
+        )['total']
+
+        total_spent = budgets.aggregate(
+            total=Coalesce(Sum('spent'), Decimal('0.00'), output_field=DecimalField())
+        )['total']
+
+        total_remaining = total_budget - total_spent
+        budgets_over_limit = total_spent > total_budget
+
+        top_category = transactions.filter(
+            type=Transaction.EXPENDITURE
+        ).values(
+            'category__name'
+        ).annotate(
+            total=Sum('amount')
+        ).order_by('-total').first()
+
+        return Response({
+            'total_income': total_income,
+            'total_expenditure': total_expenditure,
+            'net_balance': net_balance,
+            'total_budget': total_budget,
+            'total_spent': total_spent,
+            'total_remaining': total_remaining,
+            'budgets_over_limit': budgets_over_limit,
+            'top_spending_category': top_category['category__name'] if top_category else None,
+            'top_spending_amount': top_category['total'] if top_category else None,
+        })
